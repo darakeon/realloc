@@ -28,6 +28,8 @@ namespace realloc
 
 			setImage(chooser);
 
+			setDelete(chooser);
+
 			var folders = Directory
 				.GetDirectories(Config.Destiny)
 				.OrderBy(f => f)
@@ -48,7 +50,7 @@ namespace realloc
 		private static void setImage(Chooser chooser)
 		{
 			file = getFile(Config.Origin);
-			chooser.setImage(file);
+			chooser.SetImage(file);
 
 			if (file.EndsWith(".mp4"))
 			{
@@ -80,10 +82,19 @@ namespace realloc
 			return getFile(Config.Origin);
 		}
 
+		private static void setDelete(Chooser chooser)
+		{
+			chooser.SetDelete((_, _) =>
+			{
+				File.Delete(file);
+				setImage(chooser);
+			});
+		}
+
 		private static Button createButton(String name, Int32 index, String path, Chooser chooser)
 		{
 			var x = 358 + index % 2 * 81;
-			var y = 12 + index / 2 * 29;
+			var y = 12 + 29 + index / 2 * 29;
 
 			var button = new Button
 			{

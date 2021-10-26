@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace realloc
@@ -15,6 +8,23 @@ namespace realloc
 		public Chooser()
 		{
 			InitializeComponent();
+		}
+
+		public void SetImage(String path)
+		{
+			if (path != null && path.EndsWith(".mp4"))
+			{
+				Image.ImageLocation = null;
+			}
+			else
+			{
+				Image.ImageLocation = path;
+			}
+		}
+
+		public void SetDelete(Action<Object, EventArgs> action)
+		{
+			Delete.Click += new EventHandler(action);
 		}
 	}
 }

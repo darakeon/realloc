@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
 
 namespace realloc
@@ -34,6 +33,7 @@ namespace realloc
 		private void InitializeComponent()
 		{
 			this.Image = new System.Windows.Forms.PictureBox();
+			this.Delete = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.Image)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -46,11 +46,21 @@ namespace realloc
 			this.Image.TabIndex = 0;
 			this.Image.TabStop = false;
 			// 
+			// Delete
+			// 
+			this.Delete.Location = new System.Drawing.Point(358, 12);
+			this.Delete.Name = "Delete";
+			this.Delete.Size = new System.Drawing.Size(156, 23);
+			this.Delete.TabIndex = 1;
+			this.Delete.Text = "EXCLUIR";
+			this.Delete.UseVisualStyleBackColor = true;
+			// 
 			// Chooser
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(526, 279);
+			this.Controls.Add(this.Delete);
 			this.Controls.Add(this.Image);
 			this.Name = "Chooser";
 			this.Text = "Choose";
@@ -62,18 +72,7 @@ namespace realloc
 		#endregion
 
 		private System.Windows.Forms.PictureBox Image;
-
-		public void setImage(String path)
-		{
-			if (path != null && path.EndsWith(".mp4"))
-			{
-				Image.ImageLocation = null;
-			}
-			else
-			{
-				Image.ImageLocation = path;
-			}
-		}
+		private System.Windows.Forms.Button Delete;
 	}
 }
 
