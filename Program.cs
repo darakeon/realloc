@@ -69,9 +69,15 @@ namespace realloc
 				.GetDirectories(path)
 				.FirstOrDefault();
 
-			return directory != null
-				? getFile(directory)
-				: null;
+			if (directory != null)
+				return getFile(directory);
+
+			if (path == Config.Origin)
+				return null;
+
+			Directory.Delete(path);
+			
+			return getFile(Config.Origin);
 		}
 
 		private static Button createButton(String name, Int32 index, String path, Chooser chooser)
