@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace realloc
@@ -10,6 +12,7 @@ namespace realloc
 	public static class Program
 	{
 		private static String file;
+		private static Process process;
 
 		/// <summary>
 		///  The main entry point for the application.
@@ -46,13 +49,18 @@ namespace realloc
 		{
 			file = getFile(Config.Origin);
 			chooser.setImage(file);
+
+			if (file.EndsWith(".mp4"))
+			{
+				process = Process.Start(Config.VideoPlayer, $"\"{file}\"");
+			}
 		}
 
 		private static String getFile(String path)
 		{
 			var file = Directory
 				.GetFiles(path)
-				.FirstOrDefault(f => !f.EndsWith(".mp4"));
+				.FirstOrDefault();
 
 			if (file != null)
 				return file;
@@ -90,6 +98,13 @@ namespace realloc
 		{
 			return (_, _) =>
 			{
+				if (process != null)
+				{
+					process.Kill();
+					process = null;
+					Thread.Sleep(1000);
+				}
+
 				var name = new FileInfo(file).Name;
 
 				path = addDate(path, name);

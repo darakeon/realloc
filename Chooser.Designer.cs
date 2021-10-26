@@ -65,7 +65,14 @@ namespace realloc
 
 		public void setImage(String path)
 		{
-			Image.ImageLocation = path;
+			if (path.EndsWith(".mp4"))
+			{
+				Image.ImageLocation = null;
+			}
+			else
+			{
+				Image.ImageLocation = path;
+			}
 		}
 	}
 }
