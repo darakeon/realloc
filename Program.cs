@@ -2,12 +2,15 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace realloc
 {
 	public static class Program
 	{
+		private static String file;
+
 		/// <summary>
 		///  The main entry point for the application.
 		/// </summary>
@@ -20,6 +23,8 @@ namespace realloc
 			
 			var chooser = new Chooser();
 
+			setImage(chooser);
+
 			var folders = Directory
 				.GetDirectories(Config.Destiny)
 				.OrderBy(f => f)
@@ -30,37 +35,24 @@ namespace realloc
 			{
 				var folder = folders[f];
 				var dir = new DirectoryInfo(folder);
-				chooser.Controls.Add(createButton(dir.Name, f));
+				var button = createButton(dir.Name, f, folder, chooser);
+				chooser.Controls.Add(button);
 			}
-
-			var file = getFile(Config.Origin);
-
-			chooser.setImage(file);
 
 			Application.Run(chooser);
 		}
 
-		private static Button createButton(String name, Int32 index)
+		private static void setImage(Chooser chooser)
 		{
-			var x = 358 + index % 2 * 81;
-			var y = 12 + index / 2 * 29;
-
-			return new Button
-			{
-				Location = new Point(x, y),
-				Name = name,
-				Size = new Size(75, 23),
-				TabIndex = index + 1,
-				Text = name,
-				UseVisualStyleBackColor = true
-			};
+			file = getFile(Config.Origin);
+			chooser.setImage(file);
 		}
 
 		private static String getFile(String path)
 		{
 			var file = Directory
 				.GetFiles(path)
-				.FirstOrDefault();
+				.FirstOrDefault(f => !f.EndsWith(".mp4"));
 
 			if (file != null)
 				return file;
@@ -69,10 +61,70 @@ namespace realloc
 				.GetDirectories(path)
 				.FirstOrDefault();
 
-			if (directory != null)
-				return getFile(directory);
+			return directory != null
+				? getFile(directory)
+				: null;
+		}
 
-			return null;
+		private static Button createButton(String name, Int32 index, String path, Chooser chooser)
+		{
+			var x = 358 + index % 2 * 81;
+			var y = 12 + index / 2 * 29;
+
+			var button = new Button
+			{
+				Location = new Point(x, y),
+				Name = name,
+				Size = new Size(75, 23),
+				TabIndex = index + 1,
+				Text = name,
+				UseVisualStyleBackColor = true,
+			};
+
+			button.Click += new EventHandler(moveFile(path, chooser));
+
+			return button;
+		}
+
+		private static Action<Object, EventArgs> moveFile(String path, Chooser chooser)
+		{
+			return (_, _) =>
+			{
+				var name = new FileInfo(file).Name;
+
+				path = addDate(path, name);
+				var newPath = Path.Combine(path, name);
+
+				File.Move(file, newPath);
+				setImage(chooser);
+			};
+		}
+
+		private static String addDate(String path, String name)
+		{
+			var yearPath = addDatePart(path, name, @"\\\d{4}$", 0, 4);
+
+			return yearPath == path 
+				? path 
+				: addDatePart(yearPath, name, @"\\\d{2}$", 5, 2);
+		}
+
+		private static String addDatePart(String path, String name, String pattern, Int32 start, Int32 count)
+		{
+			var dirs = Directory
+				.GetDirectories(path)
+				.Where(d => Regex.IsMatch(d, pattern));
+
+			if (!dirs.Any())
+				return path;
+
+			var year = name.Substring(start, count);
+			path = Path.Combine(path, year);
+
+			if (!Directory.Exists(path))
+				Directory.CreateDirectory(path);
+			
+			return path;
 		}
 	}
 }
