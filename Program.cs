@@ -23,7 +23,7 @@ namespace realloc
 			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			
+
 			var chooser = new Chooser();
 
 			setImage(chooser);
@@ -50,11 +50,17 @@ namespace realloc
 		private static void setImage(Chooser chooser)
 		{
 			file = getFile(Config.Origin);
-			chooser.SetImage(file);
 
 			if (file.EndsWith(".mp4"))
 			{
-				process = Process.Start(Config.VideoPlayer, $"\"{file}\"");
+				process = Process.Start(
+					Config.VideoPlayer, $"\"{file}\""
+				);
+				chooser.ClearImage();
+			}
+			else
+			{
+				chooser.SetImage(file);
 			}
 		}
 
