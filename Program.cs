@@ -38,12 +38,20 @@ namespace realloc
 				.Where(f => f != Config.Origin)
 				.ToArray();
 
-			for (var f = 0; f < folders.Length; f++)
+			var count = folders.Length;
+
+			for (var f = 0; f < count; f++)
 			{
 				var folder = folders[f];
 				var dir = new DirectoryInfo(folder);
 				var button = createButton(dir.Name, f, folder, chooser);
 				chooser.Controls.Add(button);
+			}
+
+			var hiddenButtonLines = count / 2 + count % 2 - 8;
+			if (hiddenButtonLines > 0)
+			{
+				chooser.Height += hiddenButtonLines * 29;
 			}
 
 			Application.Run(chooser);
