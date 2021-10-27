@@ -14,6 +14,8 @@ namespace realloc
 		private static String file;
 		private static Process process;
 
+		private const Int32 fiveMega = 5 * 1024 * 1024;
+
 		/// <summary>
 		///  The main entry point for the application.
 		/// </summary>
@@ -51,10 +53,13 @@ namespace realloc
 		{
 			file = getFile(Config.Origin);
 
-			if (file.EndsWith(".mp4"))
+			if (isVideo(file) || tooLarge(file))
 			{
 				process = Process.Start(
-					Config.VideoPlayer, $"\"{file}\""
+					new ProcessStartInfo(file)
+					{
+						UseShellExecute = true
+					}
 				);
 				chooser.ClearImage();
 			}
@@ -86,6 +91,16 @@ namespace realloc
 			Directory.Delete(path);
 			
 			return getFile(Config.Origin);
+		}
+
+		private static Boolean isVideo(String file)
+		{
+			return file.EndsWith(".mp4");
+		}
+
+		private static Boolean tooLarge(String file)
+		{
+			return File.ReadAllBytes(file).Length > fiveMega;
 		}
 
 		private static void setDelete(Chooser chooser)
